@@ -1,0 +1,18 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: url-service-api
+  profiles:
+    active: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+connections:
+  original-url-getting-service-base-url: http://${HOST:localhost}:${PORT:8086}
+  short-link-creation-service-base-url: http://${HOST:localhost}:${PORT:8087}

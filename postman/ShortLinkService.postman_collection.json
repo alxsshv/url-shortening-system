@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "e1402520-406c-48c6-bdd0-257b97af8a7b",
+		"name": "ShortLinkService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33640824"
+	},
+	"item": [
+		{
+			"name": "Add link without ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL-REPLICATION-SUBSCRIPTION-EXAMPLES\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/links",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add link with ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL-REPLICATION-SUBSCRIPTION-EXAMPLES\",\n    \"ttl\": \"PT10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/links",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "URL length is more than 255",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL-adasdadsadasdasdadadasdadasdadadsadasdadasdadasdadsasdasdadsasdadasdsasadadadasdasdadasdasdasdadasdasdasdasdasdasdasdasdsasdasdasdasdadasdasdsadadasdasdasdasddadasdadasdasdasdasdasdasdasdasdasdasdasdasdasdadasasdaadas-REPLICATION-SUBSCRIPTION-EXAMPLES\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/links",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"links"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL-REPLICATION-SUBSCRIPTION-EXAMPLES\",\n    \"ttl\": \"RFSPT10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/links",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"links"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
