@@ -38,4 +38,4 @@
 ## Наблюдаемость ##
 Средства observability доступны по ссылкам:
 - [Prometheus](http://localhost:9090)
-- [Grafana](http://localhost:3000)
+- [Grafana](http://localhost:3000) Данные для входа: *пользователь: admin, пароль: admin*
