@@ -1,0 +1,262 @@
+{
+	"info": {
+		"_postman_id": "3ba2ddd4-01e2-4daa-9065-e29f8b7a0f8b",
+		"name": "UrlServiceApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33640824"
+	},
+	"item": [
+		{
+			"name": "Create link with ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://spring.io/\",\n    \"ttl\": \"PT10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/link",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create link without ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://spring.io/\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/link",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get original link",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/link/123mvn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link",
+						"123mvn"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Redirect to original link",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/123mvn",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"123mvn"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid ttl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://spring.io/\",\n    \"ttl\": \"PTS10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/link",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Url is null",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ttl\": \"PT10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/link",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Url is empty",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"\",\n    \"ttl\": \"PT10M\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/link",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Link not found",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v1/link/redirect/notfound",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v1",
+						"link",
+						"redirect",
+						"notfound"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bad request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/link/ ",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"link",
+						" "
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get total create links count metric",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/actuator/metrics/create_short_link_count_total",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"actuator",
+						"metrics",
+						"create_short_link_count_total"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		}
+	]
+}
