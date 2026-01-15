@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n        \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL-REPLICATION-SUBSCRIPTION-EXAMPLES\"\n}",
+					"raw": "{\n        \"url\": \"https://postgrespro.ru/docs/postgresql/17/logical-replication-subscription#LOGICAL--REPLICATION-SUBSCRIPTION-EXAMPLES\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,11 +21,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/links",
+					"raw": "{{baseURL}}/api/v1/links",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"links"
 					]
 				}
@@ -47,11 +49,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/links",
+					"raw": "{{baseURL}}/api/v1/links",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"links"
 					]
 				}
@@ -73,11 +77,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/links",
+					"raw": "{{baseURL}}/api/v1/links",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"links"
 					]
 				}
@@ -99,11 +105,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/links",
+					"raw": "{{baseURL}}/api/v1/links",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"links"
 					]
 				}
