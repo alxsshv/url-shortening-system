@@ -37,4 +37,10 @@
 ## Наблюдаемость ##
 Средства observability доступны по ссылкам:
 - [Prometheus](http://localhost:9090)
-- [Grafana](http://localhost:3000) Данные для входа: *пользователь: admin, пароль: admin*
+- [Grafana](http://localhost:3000) Данные для входа: *пользователь: admin, пароль: admin*,
+
+Некоторые ID для импорта dashboards:
+- JVM: 4701
+- Spring Micrometer: 5373
+- Postgres: 9628
+- Redis: 11835 
