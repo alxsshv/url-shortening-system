@@ -5,7 +5,11 @@ val versions = mapOf(
     "liquibase_version" to "4.29.2",
     "jedis_version" to "7.2.0",
     "testcontainers_postgres_version" to "1.21.4",
-    "testcontainers_redis_version" to "2.2.4"
+    "testcontainers_redis_version" to "2.2.4",
+    "logback_classic_version" to "1.5.18",
+    "micrometer_version" to "1.16.1",
+    "micrometer_tracing_version" to "1.6.1",
+    "opentelemetry_version" to "1.58.0",
 )
 
 val mockitoAgent = configurations.create("mockitoAgent")
@@ -59,13 +63,14 @@ dependencies {
     implementation("redis.clients:jedis:${versions["jedis_version"]}")
 
     // OBSERVABILITY
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
-    implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-observation")
-    implementation("io.micrometer:micrometer-tracing")
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp:${versions["opentelemetry_version"]}")
+    implementation("io.opentelemetry:opentelemetry-sdk:${versions["opentelemetry_version"]}")
+    implementation("io.micrometer:micrometer-registry-prometheus:${versions["micrometer_version"]}")
+    implementation("io.micrometer:micrometer-observation:${versions["micrometer_version"]}")
+    implementation("io.micrometer:micrometer-tracing:${versions["micrometer_tracing_version"]}")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel:${versions["micrometer_tracing_version"]}")
+    implementation("ch.qos.logback:logback-classic:${versions["logback_classic_version"]}")
 
     // HELPERS
     compileOnly("org.projectlombok:lombok")

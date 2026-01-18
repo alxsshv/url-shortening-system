@@ -1,16 +1,19 @@
 package com.github.alxsshv.url_service_api.application.domain.service;
 
-import com.github.alxsshv.url_service_api.application.api.GetOriginalUrlApi;
-import com.github.alxsshv.url_service_api.application.api.GetShortLinkApi;
 import com.github.alxsshv.url_service_api.application.acl.CreateShortLinkAcl;
 import com.github.alxsshv.url_service_api.application.acl.GetOriginalUrlAcl;
 import com.github.alxsshv.url_service_api.application.acl.dto.CreateShortLinkRequest;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
+import com.github.alxsshv.url_service_api.application.api.GetOriginalUrlApi;
+import com.github.alxsshv.url_service_api.application.api.GetShortLinkApi;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /** Сервис для создания коротких ссылок и получения оригинальных ссылок */
+@Component
 @AllArgsConstructor
+@Slf4j
 public class UrlService implements GetOriginalUrlApi, GetShortLinkApi {
 
     /** Буферный слой между приложением и сторонним сервисом для создания коротких ссылок */
@@ -23,7 +26,6 @@ public class UrlService implements GetOriginalUrlApi, GetShortLinkApi {
      * @param shortUrl - токен (уникальная часть) короткой ссылки.
      * @return строку, содержащую оригинальную ссылку*/
     @Override
-    @WithSpan("urlService.getOriginalUrl")
     public String getOriginalUrl(String shortUrl) {
         return getOriginalUrlAcl.getOriginalUri(shortUrl).url();
     }
@@ -33,7 +35,6 @@ public class UrlService implements GetOriginalUrlApi, GetShortLinkApi {
      * @param ttl - время жизни короткой ссылки в формате ISO-8601.
      * @return возвращает токен (уникальную часть) короткой ссылки.*/
     @Override
-    @WithSpan("urlService.getShortLink")
     public String getShortLink(String originalUrl,  @Nullable String ttl) {
         return createShortLinkAcl.createShortLink(new CreateShortLinkRequest(originalUrl, ttl));
     }
