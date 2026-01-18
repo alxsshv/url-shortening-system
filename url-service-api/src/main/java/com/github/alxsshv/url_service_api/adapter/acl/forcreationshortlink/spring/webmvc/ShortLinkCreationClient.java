@@ -1,6 +1,5 @@
 package com.github.alxsshv.url_service_api.adapter.acl.forcreationshortlink.spring.webmvc;
 
-import com.github.alxsshv.url_service_api.application.acl.CreateShortLinkAcl;
 import com.github.alxsshv.url_service_api.application.acl.dto.CreateShortLinkRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
