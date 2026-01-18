@@ -33,10 +33,18 @@ management:
         enabled: true
   tracing:
     enabled: true
+    baggage:
+      correlation:
+        enabled: true
+    propagation:
+      type: w3c
     sampling:
       probability: 1.0
 
 otel:
+  propagators:
+    - tracecontext
+    - b3
   exporter:
     otlp:
       endpoint:
@@ -46,3 +54,7 @@ otel:
     exporter: none
   metrics:
     exporter: none
+
+logging:
+  pattern:
+    level: "%5p [trace_id=%X{trace_id}, span_id=%X{span_id} ]"

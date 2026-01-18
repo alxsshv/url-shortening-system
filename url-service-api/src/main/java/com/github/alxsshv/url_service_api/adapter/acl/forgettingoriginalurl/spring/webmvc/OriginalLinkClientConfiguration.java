@@ -1,9 +1,9 @@
 package com.github.alxsshv.url_service_api.adapter.acl.forgettingoriginalurl.spring.webmvc;
 
 import com.github.alxsshv.url_service_api.ServiceConnectionProperties;
-import com.github.alxsshv.url_service_api.application.acl.dto.ErrorMessage;
 import com.github.alxsshv.url_service_api.adapter.acl.forgettingoriginalurl.spring.webmvc.exception.OriginalLinkServiceBadRequestException;
 import com.github.alxsshv.url_service_api.adapter.acl.forgettingoriginalurl.spring.webmvc.exception.OriginalUrlNotFoundException;
+import com.github.alxsshv.url_service_api.application.acl.dto.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,4 +43,6 @@ public class OriginalLinkClientConfiguration {
 
         return factory.createClient(OriginalLinkGettingServiceClient.class);
     }
+
+
 }

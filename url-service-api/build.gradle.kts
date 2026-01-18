@@ -1,5 +1,8 @@
 val versions = mapOf(
-        "spring_aop_version" to "4.0.0-M2"
+    "spring_aop_version" to "4.0.0-M2",
+    "logback_classic_version" to "1.5.18",
+    "javaxAnnotationApi" to "1.3.2",
+    "javaxValidationApi" to "2.0.0.Final"
 )
 
 
@@ -32,7 +35,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.23.0")
+        mavenBom("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.24.0")
     }
 }
 
@@ -44,13 +47,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop:${versions["spring_aop_version"]}")
 
     // OBSERVABILITY
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
+
+    implementation (platform("io.micrometer:micrometer-tracing-bom:latest.release"))
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-observation")
     implementation("io.micrometer:micrometer-tracing")
+    implementation("io.micrometer:micrometer-observation")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 
     // HELPERS
 	compileOnly("org.projectlombok:lombok")
@@ -59,6 +63,7 @@ dependencies {
     // TESTS
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 tasks.withType<Test> {

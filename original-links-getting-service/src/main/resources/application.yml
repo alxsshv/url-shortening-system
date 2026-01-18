@@ -13,7 +13,7 @@ spring:
       on-profile: dev
   datasource:
     platform: postgres
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:link_db}
     username: ${POSTGRES_USERNAME:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -45,6 +45,8 @@ management:
         enabled: true
   tracing:
     enabled: true
+    propagation:
+      types: [w3c, b3]
     sampling:
       probability: 1.0
 
@@ -57,3 +59,7 @@ otel:
     exporter: none
   metrics:
     exporter: none
+
+logging:
+  level:
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

@@ -32,6 +32,8 @@ public class LinkControllerV1 {
     @Value("${app.short-link-address-template}")
     private String shortLinkUrlAddress;
 
+
+
     /** Метод, обрабатывающий запрос на создание короткой ссылки.
      * @param request - DTO для передачи оригинальной ссылки в виде объекта {@link ShortLinkRequest}.
      * @return возвращает короткую ссылку, включая хост, порт, базовый URL и уникальный токен. */
