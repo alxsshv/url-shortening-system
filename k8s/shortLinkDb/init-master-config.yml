@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: short-link-database-master-init
+  namespace: dev
+data:
+  1_schema.sql : |
+      CREATE SCHEMA IF NOT EXISTS links;
+      SET search_path TO links, public;
+
+      CREATE TABLE links.links (
+          id BIGINT NOT NULL PRIMARY KEY,
+          token VARCHAR(10) NOT NULL,
+          url VARCHAR(255) NOT NULL,
+          created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+          expired_at TIMESTAMP WITHOUT TIME ZONE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_links_token ON links.links(token);
+
+  2_create_links_sequence.sql: |
+      CREATE SEQUENCE IF NOT EXISTS links.links_seq
+      START WITH 1
+      INCREMENT BY 1;
+
+  3_configure_replication.sh: |
+      #!/usr/bin/env bash
+      set -e
+
+      echo "Конфигурируем базу данных $POSTGRES_DB как мастер..."
+      psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "DROP PUBLICATION IF EXISTS links_publication;"
+      echo "Удаляем старые слоты репликации..."
+      psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "SELECT pg_drop_replication_slot('link_db_subscription');"
+      echo "Создаем публикацию..."
+      psql --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -c "CREATE PUBLICATION IF NOT EXISTS links_publication FOR TABLE links.links;"
+

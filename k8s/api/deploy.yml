@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      name: api
+      system: url-shortening-system
+      type: application
+  template:
+    metadata:
+      labels:
+        name: api
+        system: url-shortening-system
+        type: application
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: api
+          image: alxsshv/url-service-api:1.0.0
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: 'dev'
+            - name: ORIGINAL_URL_SERVICE_BASE_URL
+              value: http://original-links-getting-service:8086
+            - name: SHORT_LINK_SERVICE_BASE_URL
+              value: http://short-link-creation-service:8087
+            - name: SHORT_LINK_ADDRESS_TEMPLATE
+              value: http://test.local/
+            - name: OTLP_EXPORTER_ENDPOINT
+              value: http://tempo:4318
+          resources:
+            requests:
+              cpu: 250m
+              memory: 500Mi
+              ephemeral-storage: 500Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
+              ephemeral-storage: 700Mi
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            failureThreshold: 20
+            timeoutSeconds: 5
+            periodSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            failureThreshold: 20
+            successThreshold: 1
+            timeoutSeconds: 5
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8085
+            failureThreshold: 20
+            successThreshold: 1
+            timeoutSeconds: 5
+            periodSeconds: 15
+
+
+

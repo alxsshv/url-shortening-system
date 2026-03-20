@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: dev
+  name: prometheus
+  labels:
+    name: prometheus
+    system: url-shortening-system
+    type: monitoring
+spec:
+  serviceName: prometheus
+  replicas: 1
+  selector:
+    matchLabels:
+      name: prometheus
+      system: url-shortening-system
+      type: monitoring
+  template:
+    metadata:
+      namespace: dev
+      name: prometheus-pod
+      labels:
+        name: prometheus
+        system: url-shortening-system
+        type: monitoring
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v3.9.1
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --web.enable-lifecycle
+          volumeMounts:
+            - mountPath: /etc/prometheus
+              name: config-volume
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              cpu: 200m
+              memory: 500Mi
+              ephemeral-storage: 500Mi
+            limits:
+              cpu: 200m
+              memory: 500Mi
+              ephemeral-storage: 2Gi
+          startupProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 20
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 20
+            successThreshold: 1
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-config

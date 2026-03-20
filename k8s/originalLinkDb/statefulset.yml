@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: original-link-database
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgres
+      system: url-shortening-system
+      app: original-link-database
+      type: database
+      role: replica
+  serviceName: original-link-database
+  template:
+    metadata:
+      labels:
+        name: postgres
+        system: url-shortening-system
+        app: original-link-database
+        type: database
+        role: replica
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: original-link-database-exporter
+          image: prometheuscommunity/postgres-exporter:v0.18.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATA_SOURCE_URI
+              value: original-link-database:5432/link_db?sslmode=disable
+            - name: DATA_SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_USER
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 9187
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 200m
+              ephemeral-storage: 500Mi
+            limits:
+              memory: 128Mi
+              cpu: 200m
+              ephemeral-storage: 500Mi
+
+        - name: original-link-database
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          args:
+            - "-c"
+            - "config_file=/etc/postgresql/postgresql.conf"
+          env:
+            - name: PGDATA
+              value: /data
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_DB
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+              ephemeral-storage: 1Gi
+            limits:
+              memory: 1Gi
+              cpu: 500m
+              ephemeral-storage: 1Gi
+          volumeMounts:
+            - name: postgres-config
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+            - name: original-link-database-data
+              mountPath: /data
+            - name: original-link-database-replica-init
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        - name: postgres-config
+          configMap:
+            name: postgres-config
+            defaultMode: 0644
+        - name: original-link-database-replica-init
+          configMap:
+            name: original-link-database-replica-init
+            defaultMode: 0644
+        - name: original-link-database-data
+          emptyDir: { }
+

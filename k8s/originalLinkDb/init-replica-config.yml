@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: original-link-database-replica-init
+  namespace: dev
+data:
+
+  1_schema.sql : |
+    CREATE SCHEMA IF NOT EXISTS links;
+    SET search_path TO links, public;
+    
+    CREATE TABLE IF NOT EXISTS links.links (
+    id BIGINT NOT NULL PRIMARY KEY,
+    token VARCHAR(10) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    expired_at TIMESTAMP WITHOUT TIME ZONE
+    );
+    
+    CREATE INDEX IF NOT EXISTS idx_links_token ON links.links(token);
+    
+    CREATE SEQUENCE IF NOT EXISTS links.links_seq START WITH 1 INCREMENT BY 1;
+
+  2_configure_replication_as_replica.sh: |
+    #!/usr/bin/env bash
+    set -e
+    
+    # Параметры
+    MASTER_DB="short-link-database"
+    REPLICA_HOST="original-link-database"
+    SLOT_NAME="link_db_subscription_$(date +%Y%m%d%H%M%S)_$RANDOM"
+    
+    echo "Processing subscription"
+    # Подписываемся на master
+    echo "Drop old subscriptions"
+    psql -h "$REPLICA_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SUBSCRIPTION IF EXISTS ${POSTGRES_DB}_subscription;"
+    echo "Create new subscription"
+    psql -h "$REPLICA_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE SUBSCRIPTION ${POSTGRES_DB}_subscription CONNECTION 'dbname="$POSTGRES_DB" host=$MASTER_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD' PUBLICATION links_publication WITH (create_slot = true, slot_name = '$SLOT_NAME');"
+    
+    echo "$POSTGRES_DB configured to replicate from $MASTER_DB."

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tempo
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: tempo
+      system: url-shortening-system
+      type: monitoring
+  serviceName: tempo
+  template:
+    metadata:
+      name: tempo
+      namespace: dev
+      labels:
+        name: tempo
+        system: url-shortening-system
+        type: monitoring
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: tempo
+          image: grafana/tempo:2.4.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --config.file=/etc/tempo/tempo.yaml
+          ports:
+            - containerPort: 3200
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+              ephemeral-storage: 1Gi
+            limits:
+              memory: 1Gi
+              cpu: 250m
+              ephemeral-storage: 1Gi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/tempo/tempo.yaml
+              subPath: tempo.yaml
+            - name: tempo-data-volume
+              mountPath: /var/tempo
+      volumes:
+        - name: config-volume
+          configMap:
+            name: tempo-config
+        - name: tempo-data-volume
+  volumeClaimTemplates:
+    - metadata:
+        name: tempo-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+
+
+
+
