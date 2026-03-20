@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: original-link-database-replica-init
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: init-scripts
+          image: postgres:17
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for PostgreSQL to be ready..."
+              until pg_isready -h original-link-database -U "$POSTGRES_USER"; do
+                sleep 5
+              done
+              echo "PostgreSQL is ready, executing init scripts..."
+
+              # Выполняем SQL скрипты
+              export PGPASSWORD="$POSTGRES_PASSWORD"
+              for script in /scripts/*.sql; do
+                if [ -f "$script" ]; then
+                  echo "Executing $script..."
+                  psql -h original-link-database -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f "$script"
+                fi
+              done
+
+              # Выполняем shell скрипты
+              for script in /scripts/*.sh; do
+                if [ -f "$script" ]; then
+                  echo "Executing $script..."
+                  bash "$script"
+                fi
+              done
+
+              echo "Init scripts completed successfully."
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 150m
+              ephemeral-storage: 500Mi
+            limits:
+              memory: 128Mi
+              cpu: 150m
+              ephemeral-storage: 500Mi
+      volumes:
+        - name: scripts
+          configMap:
+            name: original-link-database-replica-init
+            defaultMode: 0644
+      restartPolicy: Never
+  backoffLimit: 3

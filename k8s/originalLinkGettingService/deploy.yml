@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: original-link-getting-service
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: original-links-getting-service
+      system: url-shortening-system
+      type: application
+  template:
+    metadata:
+      name: original-links-getting-service
+      namespace: dev
+      labels:
+        name: original-links-getting-service
+        system: url-shortening-system
+        type: application
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: original-links-getting-service
+          image: alxsshv/original-links-getting-service:1.0.0
+          ports:
+            - containerPort: 8086
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: OTLP_EXPORTER_ENDPOINT
+              value: http://tempo:4318
+            - name: POSTGRES_HOST
+              value: original-link-database
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_PASSWORD
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: REDIS_PORT
+          resources:
+            requests:
+              cpu: 150m
+              memory: 500Mi
+              ephemeral-storage: 500Mi
+            limits:
+              cpu: 300m
+              memory: 800Mi
+              ephemeral-storage: 500Mi
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            failureThreshold: 40
+            timeoutSeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8086
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1

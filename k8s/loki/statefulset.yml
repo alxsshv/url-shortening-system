@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: loki
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: loki
+      system: url-shortening-system
+      type: monitoring
+  serviceName: loki
+  template:
+    metadata:
+      name: loki
+      namespace: dev
+      labels:
+        name: loki
+        system: url-shortening-system
+        type: monitoring
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: loki
+          image: grafana/loki:main-3acb310
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3100
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+              ephemeral-storage: 500Mi
+            limits:
+              memory: 256Mi
+              cpu: 100m
+              ephemeral-storage: 500Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/loki/config.yml
+              subPath: config.yml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: loki-config
+
+
+
+
+

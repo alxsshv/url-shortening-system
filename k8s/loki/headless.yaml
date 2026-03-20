@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki
+  namespace: dev
+spec:
+  clusterIP: None
+  selector:
+    name: loki
+    system: url-shortening-system
+    type: monitoring
+  ports:
+    - name: loki
+      port: 3100
+      targetPort: 3100

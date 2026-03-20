@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: short-link-creation-service
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      name: short-link-creation-service
+      system: url-shortening-system
+      type: application
+  template:
+    metadata:
+      name: short-link-creation-service
+      labels:
+        name: short-link-creation-service
+        system: url-shortening-system
+        type: application
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: short-link-creation-service
+          image: alxsshv/short-link-creation-service:1.0.0
+          ports:
+            - containerPort: 8087
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: OTLP_EXPORTER_ENDPOINT
+              value: http://tempo:4318
+            - name: POSTGRES_HOST
+              value: short-link-database
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_DB
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: 150m
+              memory: 500Mi
+              ephemeral-storage: 256Mi
+            limits:
+              cpu: 300m
+              memory: 800Mi
+              ephemeral-storage: 512Mi
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8087
+            failureThreshold: 20
+            timeoutSeconds: 5
+            periodSeconds: 20
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8087
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8087
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1
+
+
+

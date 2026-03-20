@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: original-links-getting-service
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector:
+    name: original-links-getting-service
+    system: url-shortening-system
+    type: application
+  ports:
+    - name: original-links-getting-service
+      port: 8086
+      targetPort: 8086
+      protocol: TCP

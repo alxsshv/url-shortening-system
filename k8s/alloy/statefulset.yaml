@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: alloy
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+       matchLabels:
+         name: alloy
+         system: url-shortening-system
+         type: monitoring
+  serviceName: alloy
+  template:
+    metadata:
+      namespace: dev
+      labels:
+        name: alloy
+        system: url-shortening-system
+        type: monitoring
+    spec:
+      serviceAccountName: alloy-account
+      containers:
+        - name: alloy
+          image: grafana/alloy:v1.12.2
+          ports:
+            - containerPort: 4318
+            - containerPort: 4317
+            - containerPort: 9080
+          args:
+            - run
+            - --server.http.listen-addr=0.0.0.0:9080
+            - --storage.path=/var/lib/alloy/data
+            - /etc/alloy/config.alloy
+          env:
+            - name: GRAFANA_LOKI_URL
+              value: http://loki:3100/loki/api/v1/push
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 500Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+              ephemeral-storage: 500Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/alloy/config.alloy
+              subPath: config.alloy
+      volumes:
+        - name: config-volume
+          configMap:
+            name: alloy-config
+            defaultMode: 0644

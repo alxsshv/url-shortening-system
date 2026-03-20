@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: short-link-database
+  namespace: dev
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30055
+  selector:
+    name: postgres
+    system: url-shortening-system
+    app: short-link-database
+    type: database
+    role: master

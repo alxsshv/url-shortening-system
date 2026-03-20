@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: url-shortening-system-ingress
+  namespace: dev
+spec:
+  rules:
+    - host: test.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: api
+                port:
+                  number: 8085
+            pathType: Prefix
+            path: "/"

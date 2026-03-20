@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      name: redis-cache
+      system: url-shortening-system
+      app: redis
+      type: cache
+  serviceName: redis-headless
+  template:
+    metadata:
+      name: redis
+      namespace: dev
+      labels:
+        name: redis-cache
+        system: url-shortening-system
+        app: redis
+        type: cache
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: redis-cache
+          image: redis:8.2.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: REDIS_USER
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortening-system-secrets
+                  key: REDIS_PASSWORD
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+              ephemeral-storage: 500Mi
+            limits:
+              memory: 256Mi
+              cpu: 250m
+              ephemeral-storage: 500Mi
+
+        - name: redis-exporter
+          image: oliver006/redis_exporter:v1.80.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9121
+          env:
+            - name: REDIS_ADDR
+              value: redis://localhost:6379
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+              ephemeral-storage: 256Mi
+            limits:
+              memory: 256Mi
+              cpu: 200m
+              ephemeral-storage: 512Mi
+
+
+
+
