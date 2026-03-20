@@ -1,0 +1,24 @@
+spring:
+  config:
+    activate:
+      on-profile: integration-test
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/link_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      format_sql: true
+  cache:
+    redis:
+      cache-null-values: false
+      time-to-live: 15m
+  redis:
+    host: localhost
+    port: 6379
+

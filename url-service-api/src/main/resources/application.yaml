@@ -1,0 +1,60 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: url-service-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+app:
+  connections:
+    original-url-getting-service-base-url: ${ORIGINAL_URL_SERVICE_BASE_URL:http://localhost:8086}
+    short-link-creation-service-base-url: ${SHORT_LINK_SERVICE_BASE_URL:http://localhost:8087}
+  short-link-address-template: ${SHORT_LINK_ADDRESS_TEMPLATE:http://localhost:8085/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    prometheus:
+      access: read_only
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  tracing:
+    enabled: true
+    baggage:
+      correlation:
+        enabled: true
+    propagation:
+      type: w3c
+    sampling:
+      probability: 1.0
+
+otel:
+  propagators:
+    - tracecontext
+    - b3
+  exporter:
+    otlp:
+      endpoint:
+        ${OTLP_EXPORTER_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+
+logging:
+  pattern:
+    level: "%5p [trace_id=%X{trace_id}, span_id=%X{span_id} ]"
